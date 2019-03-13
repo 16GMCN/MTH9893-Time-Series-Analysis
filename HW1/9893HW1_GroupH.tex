@@ -1,0 +1,428 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+
+\usepackage{geometry}
+
+\geometry{paper=letterpaper, top=2cm, bottom=2cm, left=2cm, right=2cm}
+\usepackage[sfdefault,light]{roboto}
+\usepackage{fancyhdr}
+\usepackage{float}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+\setlength{\leftskip}{0pt}
+\setlength{\headheight}{14pt}
+\newcommand\question[2]{\vspace{.25in}\hrule\textbf{#1: #2}\vspace{.5em}\hrule\vspace{.10in}}
+\pagestyle{fancyplain}
+\lhead{\textbf{\NAME (\MEMBERS)}}
+\rhead{\textbf{Homework 1 / MTH-9803}}
+\begin{document}\raggedright
+\newcommand\NAME{Group H}
+\newcommand\MEMBERS{Shenyi Mao, Yueting Zhang, Chenyu Zhao, Jose Ferreira}
+\newcommand\HWNUM{1}
+
+
+
+\question{1}{Is the following AR(2) process:	$$X_{t} = 1.92 - 1.1X_{t-1} + 0.18X_{t-2} + \epsilon_{t}, \ \epsilon_{t} \sim N(0,1)$$ covariance stationary? If so, calculate its mean and all auto-covariances.} 
+
+The process is covariance stationary if all the roots of its characteristic equation are outside of the unit circle i.e. their absolute value is strictly larger than 1.\\
+
+The characteristic equation is: $$1 + 1.1z - 0.18z^2$$ \\
+
+Its roots are: 
+$$z_1=\frac{55 + \sqrt{4825}}{18}; z_2 = \frac{55 - \sqrt{4825}}{18}$$
+$\lvert z_1 \rvert \approx 6.91; \lvert z_1 \rvert \approx 0.8 < 1$\\ 
+$\implies \text{the process is not covariance stationary}$\\
+\medskip
+
+To convince us further this in fact the case, let's try to simulate this process (\textsl{Code section 1.1}).\\
+The series grows without bound and indeed they intuitively look non-stationary (variance across time is not preserved, the series is not homoscedastic).
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\linewidth]{output_7_0}
+	\caption{Simulation of the AR(2) process in Problem 1}
+	\label{fig:1}
+\end{figure}
+
+\question{2}{Carry out a detailed discussion of the conditions on $\beta_{1}$ and $\beta_{2}$ under which the AR(2) time series
+	$$ X_t = \alpha +\beta_1X_{t-1}+\beta_2X_{t-2} + \epsilon _t, \ \epsilon _t \sim N(0,\sigma^2)$$ is covariance stationary}
+
+An AR(2) process can be expressed by 
+
+\begin{equation}\label{2.1}
+	X_t-\mu =  +\beta_1(X_{t-1}-\mu)+\beta_2(X_{t-2}-\mu) + \epsilon _t 
+\end{equation}
+
+Multiply $X_{t-k}$ on both sides of (\ref{2.1}) and take its expectation:
+
+$$\Gamma_k=\beta_1 \Gamma_{k-1}+\beta_2\Gamma_{k-2}$$
+
+Let $x_1$ and $x_2$ be the roots of $\phi(x)=1-\beta_1x-\beta_2x^2$. 
+
+Based on this recursion formula, we have the general form for $\Gamma_k$
+
+\begin{equation}\label{2.2}
+\Gamma_k=a(\frac{1}{x_1})^k+b(\frac{1}{x_2})^k
+\end{equation}
+
+If we plug $\Gamma_0$ and $\Gamma_1$ in, we can get values of a and b.
+
+To stop $\Gamma_k$ from blowing up in (\ref{2.2}), we must have $x_1$ and $x_2$ on or outside the unit root in the complex plane.\\ 
+\medskip
+
+Now we show $x_1$ and $x_2$ can not be on the unit circle by contradiction:
+
+\setlength{\leftskip}{2cm} 
+Assume $z=a+bi$ is on the unit circle, which means $a^2+b^2=1$. We plug it in $\phi(x)$:
+
+$$
+1-\beta_1(a+bi)-\beta_2(a^2-b^2+2abi)=0
+$$
+
+which equals to
+
+$$
+1-\beta_1a-\beta_2(a^2-b^2)=0,\qquad\beta_1b+2ab\beta_2=0
+$$
+\begin{enumerate}\setlength{\leftskip}{2cm} 
+\item[1)] when $b=0$, $z=\pm 1$, we have $(1-\beta_2^2)=\beta_1^2$
+\item[2)] when $b\neq 0$, we have $\beta_1=-2a\beta_2$ and $a+2a^2\beta_2-\beta_2(2a^2-1)=0$, so we have $\beta_2=-1$
+\end{enumerate}
+
+Recall that
+
+\begin{equation}\label{2.3}
+\Gamma_0 = \frac{(1-\beta_2)\sigma^2}{(1+\beta_2)(1-\beta_1-\beta_2)(1+\beta_1-\beta_2)}
+\end{equation}
+
+So under both 1) and 2), $\Gamma_0$ is undefined in (\ref{2.3}) and the roots of $\phi(x)$ cannot be on the unit circle.
+
+\setlength{\leftskip}{0pt} 
+
+Therefore, the roots of $\phi(x)$ must lie outside of the unit circle. \qed\\ 
+
+\medskip
+\medskip
+Now, we want to find conditions for the coefficients $\beta_{1}$ and $\beta_{2}$ of an AR(2) process that determine the series to be covariance stationary.
+
+We have just proved that the roots of the characteristic equation $\phi(x)=1-\beta_1x-\beta_2x^2$ must lie outside the unit circle.\\ 
+If we make the substitution for one of the roots $x^{-1} = \lambda$ we can express the characteristic equation as:
+\begin{equation}\label{2.4}
+\lambda^2 - \beta_1\lambda  - \beta_2 = 0
+\end{equation}   
+
+We call this the inverse characteristic equation and note that the roots of this equation must lie inside the unit circle for the series to be stationary since $\lvert x \rvert > 1 \iff \lvert \lambda \rvert < 1$.
+
+The roots of this equation are given by: 
+$$\lvert \lambda_{1,2} \rvert = \left|{\frac{\beta_1 \pm \sqrt{\beta_1 + 4\beta_2}}{2}}\right| < 1$$
+
+\begin{equation}\label{2.5}
+\implies \lvert \lambda_1\lambda_2 \rvert = \lvert \beta_2 \rvert < 1  
+\end{equation}
+
+Considering the definition of stationarity, we need to have a finite mean, for an AR(2) process:
+
+$$\mu =  \alpha + \beta_1\mu + \beta_2\mu$$
+$$\implies  \mu = \frac{\alpha}{1-\beta_1-\beta_2}$$
+$$\implies  1-\beta_1-\beta_2 \ne 0$$
+
+\begin{equation}\label{2.6}
+\implies  \beta_1+\beta_2 \ne 1
+\end{equation}
+
+Additional conditions for $\beta_1$ and $\beta_2$ can be determined using the Yule-Walker equations.
+Since $\Gamma_0$ represents the variance of $X_t$, the expression in (\ref{2.3}) has to be positive.
+
+We know $(1-\beta_2)$ is greater than zero since $\lvert \beta_2 \rvert < 1$. 
+
+Therefore, the denominator $(1+\beta_2)(1-\beta_1-\beta_2)(1+\beta_1-\beta_2)$ needs to be greater than zero.
+
+The factor $(1+\beta_2)$ is greater than zero, we need $(1-\beta_1-\beta_2)(1+\beta_1-\beta_2)$ to be also greater than zero.
+
+The only way for this to happen is for both factors to be greater than zero, it is not possible to have the case of both being negative since:
+
+$$(1-\beta_1-\beta_2) < 0 \quad\text{and}\quad (1+\beta_1-\beta_2) < 0$$
+$$\implies \beta_1>(1-\beta_2) \quad\text{and}\quad \beta_1>-(1-\beta_2)$$
+
+So we have for both positive factors:
+
+$$(1-\beta_1-\beta_2) > 0\quad\text{and}\quad (1+\beta_1-\beta_2) > 0$$
+
+\begin{equation}\label{2.7}
+\implies \beta_1+\beta_2 < 1 \quad\text{and}\quad \beta_2 - \beta_1 < 1
+\end{equation}
+
+To sum up, we have three conditions for stationarity of the AR(2) process given by equations (\ref{2.5}),(\ref{2.6}) and (\ref{2.7}):
+\begin{itemize}
+	\item $\lvert \beta_2 \rvert < 1$
+	\item $\beta_1 + \beta_2 < 1$
+	\item $\beta_2 - \beta_1 < 1$
+\end{itemize}
+
+The inequalities define a triangular area where the series AR(2) will be stationary depending on the values of $\beta_1$ and $\beta_2$:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\linewidth]{triangle}
+	\caption{Area where AR(2) is stationary}
+	\label{fig:2}
+\end{figure}
+
+
+\question{3}{Consider the time series of daily returns on two ETFs tracking broad market indices: SPY and IWV over the last 10 years, and let $X_t$ denote the difference of these returns. Try to model $X_t$ as an AR(p) time series model, and discuss the results.}
+
+We retrieve daily adjusted close data for the two ETFs from Yahoo! Finance, calculate daily returns and set our series to be the difference SPY - IWV (\textsl{Code section 3.1}) 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{output_17_0}
+	\caption{ETF prices: SPY and IWV}
+	\label{fig:3}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{output_18_0}
+	\caption{Difference of returns}
+	\label{fig:4}
+\end{figure}
+
+First, we need to confirm the resulting series is covariance stationary. From the plot, it certainly looks more or less so with the exception of a seemingly larger than average variance around 2008-2009.
+We can look at the definition of stationarity and perform simple tests over the mean, variance and correlation of the series as an initial diagnostic tool.
+We know that, for a series to be stationary:
+
+\begin{itemize}
+	\item the expected value for any t is a constant $\mu$.
+	\item the variance does not change through time.
+	\item the auto-covariance only depends on the distance between the two points. 	
+\end{itemize}
+
+We can split the data into several sections and calculate the mean and variance of each group to compare (\textsl{Code section 3.2})\\
+\medskip
+{
+\begin{center}
+	\centering
+\begin{tabular}{|c|c|c|}
+	\hline 
+	&\textbf{Mean}&\textbf{Variance}  \\ 
+	\hline 
+	\textbf{Section 1}&-0.000004&0.000010\\ 
+	\hline 
+	\textbf{Section 2}&-0.000007&0.000001\\ 
+	\hline 
+	\textbf{Section 3}&0.000011&0.000001\\ 
+	\hline 
+\end{tabular} 
+\end{center}
+
+It seems that, in regards to the first and second conditions, this series can be stationary.\\
+\medskip
+
+For the third condition, we can look at the auto-correlation and partial auto-correlation plots. The auto-correlation (ACF) and partial auto-correlation function (PACF) plots hint that the series might not be stationary. There are significant changes in the values of correlation even beyond lag 20 (\textsl{Code section 3.3}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{output_22_0}
+	\caption{Auto-correlation plot}
+	\label{fig:acf}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{output_22_1}
+	\caption{Partial auto-correlation plot}
+	\label{fig:pacf}
+\end{figure}
+
+Another option to check for stationarity is to perform an statistical test like the augmented Dickey-Fuller (ADF) test.\\
+
+The null hypothesis of the ADF test is that the time series is not stationary.\\
+The alternate hypothesis is that the time series is stationary.\\
+We interpret this result using the p-value from the test. A p-value below a threshold (normally 5\% or 1\%) suggests we reject the null hypothesis (stationary), otherwise a p-value above the threshold suggests we fail to reject the null hypothesis (non-stationary) (\textsl{Code section 3.4}).\\
+\begin{center}
+	\centering
+\begin{tabular}{|c|c|}
+	\hline 
+	\textbf{ADF Statistic}&-10.367593  \\ 
+	\hline 
+	\textbf{p-value}&0.000000  \\ 
+	\hline 
+	\textbf{1\%}&-3.433  \\ 
+	\hline 
+	\textbf{5\%}&-2.863  \\ 
+	\hline 
+	\textbf{10\%}&-2.567  \\ 
+	\hline 
+\end{tabular} 
+\end{center}
+
+According to the above results, we can clearly assume that the series is stationary and we can try to fit this data to an AR process.\\
+A way to do this is to decide on a maximum number of lags and calculate the AIC value for all of the possible models.\\
+The parameter p resulting from the model with the minimum of the AIC values is chosen. Having chosen the maximum number of lags to be 20, the algorithm found that including most of the parameters would improve the AIC value (\textsl{Code section 3.5}).
+\medskip
+\begin{center}
+\begin{tabular}{|c|c|}
+	\hline 
+	\textbf{Lags}&\textbf{AIC}  \\ 
+	\hline 
+	1&-12.607  \\ 
+	\hline 
+	2&-12.635  \\ 
+	\hline 
+	3&-12.734  \\ 
+	\hline 
+	4&-12.734  \\ 
+	\hline 
+	5&-12.734  \\ 
+	\hline 
+	6&-12.748  \\ 
+	\hline 
+	7&-12.749  \\ 
+	\hline 
+	8&-12.765  \\ 
+	\hline 
+	9&-12.767  \\ 
+	\hline 
+	10&-12.769  \\ 
+	\hline 
+	11&-12.777  \\ 
+	\hline 
+	12&-12.777  \\ 
+	\hline 
+	13&-12.777  \\ 
+	\hline 
+	14&-12.778  \\ 
+	\hline 
+	15&-12.8  \\ 
+	\hline 
+	16&-12.805  \\ 
+	\hline 
+	17&-12.806  \\ 
+	\hline 
+	18&-12.806  \\ 
+	\hline 
+	19&-12.806  \\ 
+	\hline 
+	20&-12.81  \\ 
+	\hline 
+\end{tabular} 
+\end{center}
+
+Again, the auto-correlation (ACF) and partial auto-correlation function (PACF) plots are an useful tool to understand what might be happening.\\ The PACF will display the partial correlation which each of the lagged values and one would expect that, for an ideal AR(p) process, the significance of correlation values beyond p to disappear.\\
+
+This is not the case when the graph is generated for the time series in study. We see there is an important amount of correlation with the previous 3 days but also that the importance of the lag values does not really fade when increasing the lag amount.\\ 
+We can observe the same in the ACF plot, there are significant values of correlation with lag values like 4, 8 and 15 among others which might be an indication of the presence of weekly seasonality in the series.
+
+There are indications that an AR model would not fit the data very well, for now, and as a rough approximation, let's try to fit the data to an AR(3) model since the partial autocorrelation graph has highlighted the fact that there is strong correlation with these lagged values. The parameters found using maximum likelihood function optimization are (\textsl{Code section 3.6}):
+\medskip
+
+\begin{center}
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline 
+		\textbf{constant}&0.000002\\ 
+		\hline 
+		\textbf{L1}&-0.453945  \\ 
+		\hline 
+		\textbf{L2}&-0.292082  \\ 
+		\hline 
+		\textbf{L3}&-0.308429  \\ 
+		\hline 
+	\end{tabular}
+\end{center}
+
+Compare with the parameters obtained for an AR(20) fit. The values beyond 3 are smaller in scale  but significant (see, for example the L8 value).
+\medskip
+
+\begin{center}
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline 
+		\textbf{constant}&0.000003\\ 
+		\hline 
+		\textbf{L1}&-0.439352  \\ 
+		\hline 
+		\textbf{L2}&-0.267585  \\ 
+		\hline 
+		\textbf{L3}&-0.332349  \\ 
+		\hline 
+		\textbf{L4}&-0.036363  \\ 
+		\hline 
+		\textbf{L5}&-0.007929  \\ 
+		\hline 
+		\textbf{L6}&-0.038296  \\ 
+		\hline
+		\textbf{L7}&0.094632  \\ 
+		\hline 
+		\textbf{L8}&0.161325  \\ 
+		\hline 
+		\textbf{L9}&0.075421  \\ 
+		\hline 
+		\textbf{L10}&-0.009118  \\ 
+		\hline 
+		\textbf{L11}&0.071307  \\ 
+		\hline 
+		\textbf{L12}&0.020420  \\ 
+		\hline 
+		\textbf{L13}&-0.039292  \\ 
+		\hline 
+		\textbf{L14}&-0.012794  \\ 
+		\hline 
+		\textbf{L15}&0.093710  \\ 
+		\hline  
+		\textbf{L16}&-0.099706  \\ 
+		\hline  
+		\textbf{L17}&-0.027465  \\ 
+		\hline  
+		\textbf{L18}&-0.002121  \\ 
+		\hline  
+		\textbf{L19}&0.043944  \\ 
+		\hline  
+		\textbf{L20}&0.077198  \\ 
+		\hline  
+	\end{tabular}
+\end{center}
+
+\question{4}{(Bonus Problem) Show that the AR(1) time series model $$X_t=\alpha + \beta X_{t-1} + \epsilon_{t}, \epsilon_{t} \sim N(0,\sigma^2)$$ with $0 < \beta < 1$ can be viewed as a result of discretization of the continuous time Ornstein-Uhlenbeck process: $$dX_t = \lambda(\mu - X_t)dt + \gamma dW_t$$ where $\lambda, \gamma > 0$. Find the mapping between the parameters of these two models.}
+
+We solve the SDE and then match the parameters. 
+
+$$ dX_{t} = \lambda ( \mu - X_{t}) dt + \gamma dW_{t} $$
+
+$\Rightarrow$ $$ dX_{t} + \lambda X_{t} dt = \lambda  \mu  dt + \gamma dW_{t} $$
+
+$\Rightarrow$
+$$e^{\lambda t} dX_{t} + \lambda e^{\lambda t}X_{t} dt = \lambda  \mu e^{\lambda t} dt + \gamma e^{\lambda t}dW_{t} $$
+
+$\Rightarrow$
+$$ de^{\lambda t}X_{t} =   \mu de^{\lambda t} + \gamma e^{\lambda t}dW_{t} $$
+
+Integrate from $X_{t}$ to $X_{t+1}$:
+
+$$ e^{\lambda (t+1)} X_{t+1} - e^{\lambda t} X_{t} = \mu( e^{\lambda (t+1)} - e^{\lambda t}) + \gamma \int_{t}^{t+1} e^{\lambda k}\, dW_{k}$$
+
+Compare the above equation with AR model:
+$$ X_{t} = \alpha + \beta X_{t-1} + \epsilon_{t}, \quad \epsilon_{t} \sim N(0,\sigma^2)$$
+
+Thus, we first know that :
+
+$$ \alpha = \mu(1-e^{-\lambda}) ,\ \beta = e^{-\lambda}$$
+
+Consider the term 
+
+$$ \gamma e^{-\lambda (t+1)}  \int_{t}^{t+1} e^{\lambda k}\, dW_{k}$$
+
+$$ = \gamma e^{-\lambda} \int_{0}^{1} e^{\lambda k}\, dW_{k}$$
+
+$ \quad $ It is actually random distributed with mean 0 and variance 
+
+$$\gamma ^2e^{-2\lambda}\int_{0}^{1} e^{2\lambda k}\, d_{k}$$
+$$ = \frac{\gamma^2 (1- \ e^{-2\lambda})}{2\lambda}$$
+
+$ \quad $ Thus, $$\epsilon_{t} \sim N(0,\frac{\gamma^2 (1- \ e^{-2\lambda})}{2\lambda})$$
+$$ \sigma = \gamma \sqrt{\frac{(1- \ e^{-2\lambda})}{2\lambda} }$$
+
+$ \quad $ The answer is :
+$$ \alpha = \mu(1-e^{-\lambda}) ,\ \beta = e^{-\lambda}$$
+$$ \sigma = \gamma \sqrt{\frac{(1- \ e^{-2\lambda})}{2\lambda} }$$
+
+\end{document}
